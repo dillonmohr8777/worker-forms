@@ -1,0 +1,31 @@
+# Example configuration for the forms Worker. Copy to wrangler.toml and fill in the three placeholders.
+# Nothing here is secret. The Turnstile secret is a Worker secret (see README), never a variable.
+name = "forms"
+main = "src/worker.js"
+compatibility_date = "2026-10-01"
+workers_dev = true
+
+[vars]
+# Pages allowed to post here. "*.example.com" also covers subdomains such as preview deploys.
+ALLOWED_HOSTS = "www.example.com,*.example.com"
+# Any string; it salts the visitor hash used for the rate limit (no raw IP is stored).
+HASH_SALT = "change-me"
+# Submissions per visitor, per form, per 10 minutes.
+RATE_MAX = "8"
+
+[[d1_databases]]
+binding = "DB"
+database_name = "forms"
+database_id = "REPLACE-WITH-THE-ID-PRINTED-BY-wrangler-d1-create"
+
+# Optional: file uploads. Remove this block to turn uploads off (files are then noted but not stored).
+# Create with: wrangler kv namespace create UPLOADS
+[[kv_namespaces]]
+binding = "UPLOADS"
+id = "REPLACE-WITH-THE-KV-NAMESPACE-ID"
+
+# Lets the Worker import forms.js as text so it can serve GET /forms.js. Keep as is.
+[[rules]]
+type = "Text"
+globs = ["**/forms.js"]
+fallthrough = false
